@@ -1,0 +1,631 @@
+/* ========================================
+   HOTLINE RACOONCITY - Game Design Document
+   Tema: Horror profesional para presentacion
+   ======================================== */
+
+/* RESET Y BASE */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #0a0a0a;
+    color: #e0e0e0;
+    line-height: 1.7;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* ========================================
+   HERO / HEADER
+   ======================================== */
+.hero {
+    position: relative;
+    height: 100vh;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0000 50%, #0a0a0a 100%);
+    overflow: hidden;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.8) 100%),
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(0,0,0,0.1) 2px,
+            rgba(0,0,0,0.1) 4px
+        );
+    pointer-events: none;
+}
+
+.hero-content {
+    text-align: center;
+    z-index: 1;
+    animation: fadeInUp 1.5s ease;
+}
+
+.game-title {
+    font-family: 'Special Elite', cursive;
+    font-size: 5rem;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.3rem;
+    line-height: 1.1;
+    text-shadow: 0 0 40px rgba(180, 0, 0, 0.5), 0 0 80px rgba(180, 0, 0, 0.2);
+}
+
+.title-accent {
+    color: #b30000;
+    font-size: 4.5rem;
+}
+
+.game-tagline {
+    font-size: 1.1rem;
+    color: #888;
+    margin-top: 1.5rem;
+    letter-spacing: 0.2rem;
+    text-transform: uppercase;
+}
+
+.game-subtitle {
+    font-size: 0.9rem;
+    color: #555;
+    margin-top: 0.8rem;
+    letter-spacing: 0.4rem;
+    text-transform: uppercase;
+    border-top: 1px solid #333;
+    display: inline-block;
+    padding-top: 0.8rem;
+    margin-top: 1.5rem;
+}
+
+/* ========================================
+   NAVEGACION
+   ======================================== */
+.nav-bar {
+    position: sticky;
+    top: 0;
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #222;
+    z-index: 100;
+    padding: 1rem 0;
+}
+
+.nav-bar ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.nav-bar a {
+    color: #999;
+    text-decoration: none;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15rem;
+    transition: color 0.3s;
+    padding: 0.5rem 0;
+}
+
+.nav-bar a:hover {
+    color: #b30000;
+}
+
+/* ========================================
+   SECCIONES
+   ======================================== */
+.section {
+    padding: 5rem 0;
+}
+
+.section-dark {
+    background: #0f0f0f;
+}
+
+.section-title {
+    font-family: 'Special Elite', cursive;
+    font-size: 2.5rem;
+    color: #ffffff;
+    margin-bottom: 2rem;
+    text-align: center;
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: #b30000;
+    margin: 0.8rem auto 0;
+}
+
+.section-intro {
+    text-align: center;
+    color: #888;
+    margin-bottom: 3rem;
+    font-size: 1.05rem;
+}
+
+/* ========================================
+   CONCEPTO - INFO GRID
+   ======================================== */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.info-card {
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: border-color 0.3s;
+}
+
+.info-card:hover {
+    border-color: #b30000;
+}
+
+.info-card h3 {
+    color: #b30000;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15rem;
+    margin-bottom: 0.5rem;
+}
+
+.info-card p {
+    color: #ccc;
+    font-size: 1rem;
+}
+
+.concept-description {
+    background: #141414;
+    border-left: 3px solid #b30000;
+    padding: 2rem;
+    border-radius: 0 8px 8px 0;
+}
+
+.concept-description p {
+    margin-bottom: 1rem;
+    color: #bbb;
+}
+
+.concept-description p:last-child {
+    margin-bottom: 0;
+}
+
+/* ========================================
+   HISTORIA
+   ======================================== */
+.story-block {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.story-context,
+.story-protagonist,
+.story-scene {
+    margin-bottom: 2.5rem;
+}
+
+.story-block h3 {
+    color: #b30000;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+    margin-bottom: 0.8rem;
+}
+
+.story-block p {
+    color: #bbb;
+    margin-bottom: 1rem;
+}
+
+.lsk-note {
+    background: #1a1a0a;
+    border: 1px solid #3a3a1a;
+    border-left: 4px solid #b38600;
+    padding: 1.5rem 2rem;
+    margin: 1.5rem 0;
+    border-radius: 0 8px 8px 0;
+    font-family: 'Special Elite', cursive;
+    position: relative;
+}
+
+.lsk-note p {
+    color: #d4c87a;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    font-style: italic;
+}
+
+.lsk-note cite {
+    display: block;
+    text-align: right;
+    color: #b38600;
+    margin-top: 1rem;
+    font-style: normal;
+    font-weight: 600;
+}
+
+/* ========================================
+   MECANICAS
+   ======================================== */
+.mechanics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.mechanic-card {
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 8px;
+    padding: 2rem;
+    transition: transform 0.3s, border-color 0.3s;
+}
+
+.mechanic-card:hover {
+    transform: translateY(-3px);
+    border-color: #b30000;
+}
+
+.mechanic-icon {
+    font-size: 2rem;
+    margin-bottom: 0.8rem;
+}
+
+.mechanic-card h3 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+}
+
+.mechanic-card p {
+    color: #999;
+    font-size: 0.95rem;
+}
+
+/* TABLA DE ARMAS */
+.weapons-table {
+    margin-top: 2rem;
+}
+
+.weapons-table h3 {
+    color: #ffffff;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.weapons-table table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #141414;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.weapons-table th {
+    background: #1a0000;
+    color: #b30000;
+    padding: 1rem;
+    text-align: left;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+}
+
+.weapons-table td {
+    padding: 1rem;
+    border-top: 1px solid #222;
+    color: #bbb;
+}
+
+.weapons-table tr:hover td {
+    background: #1a1a1a;
+}
+
+/* ========================================
+   CONDICIONES
+   ======================================== */
+.conditions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 2rem;
+}
+
+.condition-block {
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 8px;
+    padding: 2rem;
+}
+
+.condition-block h3 {
+    color: #ffffff;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.condition-block ul {
+    list-style: none;
+    padding: 0;
+}
+
+.condition-block li {
+    color: #bbb;
+    padding: 0.5rem 0;
+    padding-left: 1.2rem;
+    position: relative;
+    font-size: 0.95rem;
+}
+
+.condition-block li::before {
+    content: '\25B8';
+    position: absolute;
+    left: 0;
+    color: #b30000;
+}
+
+/* ========================================
+   FUNCIONES (CODIGO)
+   ======================================== */
+.language-block {
+    margin-bottom: 3rem;
+}
+
+.language-title {
+    font-size: 1.5rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px 8px 0 0;
+    margin-bottom: 0;
+}
+
+.python-title {
+    background: #1a2a1a;
+    color: #4ec94e;
+    border: 1px solid #2a4a2a;
+    border-bottom: none;
+}
+
+.js-title {
+    background: #2a2a0a;
+    color: #f0db4f;
+    border: 1px solid #4a4a1a;
+    border-bottom: none;
+}
+
+.function-card {
+    background: #141414;
+    border: 1px solid #222;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+}
+
+.function-card h4 {
+    color: #ffffff;
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    word-break: break-all;
+}
+
+.function-desc {
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+.function-card pre {
+    background: #0a0a0a;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    padding: 1.5rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+.function-card code {
+    font-family: 'Courier New', monospace;
+    color: #ccc;
+}
+
+/* Syntax highlighting basico */
+code.python {
+    color: #a8d8a8;
+}
+
+code.javascript {
+    color: #f0e6a8;
+}
+
+/* ========================================
+   DEMO
+   ======================================== */
+.demo-wrapper {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.demo-controls {
+    flex: 0 0 200px;
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.demo-controls h3 {
+    color: #ffffff;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.demo-controls ul {
+    list-style: none;
+    padding: 0;
+}
+
+.demo-controls li {
+    color: #999;
+    padding: 0.4rem 0;
+    font-size: 0.85rem;
+}
+
+.demo-controls kbd {
+    background: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 0.15rem 0.5rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    color: #fff;
+}
+
+.demo-canvas-container {
+    flex: 1;
+    min-width: 300px;
+}
+
+#game-canvas {
+    width: 100%;
+    height: auto;
+    background: #111;
+    border: 2px solid #333;
+    border-radius: 8px;
+    display: block;
+}
+
+.demo-placeholder {
+    text-align: center;
+    color: #666;
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    padding: 1rem;
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+.footer {
+    background: #050505;
+    border-top: 1px solid #1a1a1a;
+    padding: 3rem 0;
+    text-align: center;
+}
+
+.footer p {
+    color: #666;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.footer-date {
+    color: #444;
+    font-size: 0.8rem;
+    margin-top: 1rem;
+}
+
+/* ========================================
+   ANIMACIONES
+   ======================================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+    .game-title {
+        font-size: 3rem;
+    }
+
+    .title-accent {
+        font-size: 2.5rem;
+    }
+
+    .nav-bar ul {
+        gap: 1rem;
+    }
+
+    .section {
+        padding: 3rem 0;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .conditions-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .demo-wrapper {
+        flex-direction: column;
+    }
+
+    .demo-controls {
+        flex: auto;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-title {
+        font-size: 2.2rem;
+    }
+
+    .title-accent {
+        font-size: 1.8rem;
+    }
+
+    .container {
+        padding: 0 1rem;
+    }
+
+    .mechanics-grid {
+        grid-template-columns: 1fr;
+    }
+}

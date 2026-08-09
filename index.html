@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotline RacoonCity - Game Design Document</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- HERO / HEADER -->
+    <header class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="game-title">HOTLINE<br><span class="title-accent">RACOON CITY</span></h1>
+            <p class="game-tagline">Survival Horror &bull; Top-Down &bull; Narrativa Ambiental</p>
+            <p class="game-subtitle">Game Design Document</p>
+        </div>
+    </header>
+
+    <!-- NAVEGACION -->
+    <nav class="nav-bar">
+        <ul>
+            <li><a href="#concepto">Concepto</a></li>
+            <li><a href="#historia">Historia</a></li>
+            <li><a href="#mecanicas">Mecanicas</a></li>
+            <li><a href="#condiciones">Condiciones</a></li>
+            <li><a href="#funciones">Funciones</a></li>
+            <li><a href="#demo">Demo</a></li>
+        </ul>
+    </nav>
+
+    <!-- SECCION 1: CONCEPTO -->
+    <section id="concepto" class="section">
+        <div class="container">
+            <h2 class="section-title">Concepto del Juego</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>Titulo</h3>
+                    <p>Hotline RacoonCity</p>
+                </div>
+                <div class="info-card">
+                    <h3>Genero</h3>
+                    <p>Survival Horror Top-Down</p>
+                </div>
+                <div class="info-card">
+                    <h3>Perspectiva</h3>
+                    <p>Cenital (vista superior)</p>
+                </div>
+                <div class="info-card">
+                    <h3>Plataforma</h3>
+                    <p>Navegador Web (HTML5 Canvas)</p>
+                </div>
+                <div class="info-card">
+                    <h3>Tono</h3>
+                    <p>Lento, tenso, atmosferico</p>
+                </div>
+                <div class="info-card">
+                    <h3>Inspiraciones</h3>
+                    <p>Resident Evil 2 (narrativa) + Hotline Miami (camara y controles)</p>
+                </div>
+            </div>
+            <div class="concept-description">
+                <p>
+                    <strong>Hotline RacoonCity</strong> combina la narrativa ambiental y la tension del survival horror clasico 
+                    con la perspectiva cenital y los controles directos de los juegos top-down. El jugador no es un soldado 
+                    ni un agente entrenado &mdash; es un civil asustado, sin experiencia en armas, buscando refugio en una 
+                    comisaria que resulta ser tan peligrosa como las calles.
+                </p>
+                <p>
+                    La historia se cuenta a traves de documentos dejados por un misterioso <strong>"LSK"</strong>, 
+                    quien fue el ultimo en salir con vida y dejo pistas para cualquiera que llegue despues.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCION 2: HISTORIA -->
+    <section id="historia" class="section section-dark">
+        <div class="container">
+            <h2 class="section-title">Historia / Guion</h2>
+            <div class="story-block">
+                <div class="story-context">
+                    <h3>Contexto</h3>
+                    <p>
+                        Una epidemia desconocida ha arrasado la ciudad. Las calles estan vacias, los coches abandonados, 
+                        y los gritos dejaron de escucharse hace horas. La unica opcion es buscar refugio.
+                    </p>
+                </div>
+                <div class="story-protagonist">
+                    <h3>El Protagonista</h3>
+                    <p>
+                        Un civil sin nombre y sin experiencia. No sabe usar armas, no tiene entrenamiento. 
+                        Solo quiere sobrevivir. Llega a la comisaria del distrito buscando seguridad, 
+                        pero lo que encuentra adentro es el caos.
+                    </p>
+                </div>
+                <div class="story-scene">
+                    <h3>La Escena (Demo)</h3>
+                    <p>
+                        Al entrar a la recepcion, el protagonista encuentra el cuerpo del <strong>Agente M</strong> 
+                        caido junto al mostrador. Sobre el mueble de recepcion, una carta firmada por <strong>"LSK"</strong>:
+                    </p>
+                    <blockquote class="lsk-note">
+                        <p>
+                            "Si alguien lee esto: el Agente M no lo logro. Yo fui tras ellos. 
+                            No intentes salir por la puerta principal &mdash; esta bloqueada. 
+                            Busca la llave en la oficina del segundo piso. 
+                            Si llegas ahi, tal vez nos encontremos."
+                        </p>
+                        <cite>&mdash; LSK</cite>
+                    </blockquote>
+                    <p>
+                        Al inspeccionar el cuerpo del Agente M, el protagonista encuentra su arma reglamentaria 
+                        y un cuchillo de combate. <strong>Solo puede cargar uno.</strong>
+                    </p>
+                    <p>
+                        Tras elegir, los sonidos del pasillo confirman lo peor: no esta solo. 
+                        Tres infectados entran a la recepcion.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCION 3: MECANICAS -->
+    <section id="mecanicas" class="section">
+        <div class="container">
+            <h2 class="section-title">Mecanicas de Juego</h2>
+            
+            <div class="mechanics-grid">
+                <div class="mechanic-card">
+                    <div class="mechanic-icon">&#9654;</div>
+                    <h3>Movimiento</h3>
+                    <p>WASD para moverse. El personaje rota hacia donde apunta el cursor del mouse. Movimiento lento y deliberado para generar tension.</p>
+                </div>
+
+                <div class="mechanic-card">
+                    <div class="mechanic-icon">&#9876;</div>
+                    <h3>Sistema de Arma Unica</h3>
+                    <p>Solo puedes llevar <strong>un arma a la vez</strong>. Si encuentras una nueva, decides si cambiarla o conservar la actual. Cada arma tiene ventajas y desventajas.</p>
+                </div>
+
+                <div class="mechanic-card">
+                    <div class="mechanic-icon">&#10026;</div>
+                    <h3>Combate Probabilistico</h3>
+                    <p>El protagonista es un civil sin experiencia. La <strong>pistola tiene 40% de acierto</strong> (sube a 80% conforme avanza la historia). El cuchillo siempre acierta pero requiere estar cuerpo a cuerpo.</p>
+                </div>
+
+                <div class="mechanic-card">
+                    <div class="mechanic-icon">&#128270;</div>
+                    <h3>Interaccion</h3>
+                    <p>Tecla <strong>E</strong> para inspeccionar objetos: cuerpos, documentos, puertas, y elementos del entorno que revelan la historia.</p>
+                </div>
+
+                <div class="mechanic-card">
+                    <div class="mechanic-icon">&#128220;</div>
+                    <h3>Narrativa Ambiental</h3>
+                    <p>Documentos de LSK esparcidos por la comisaria cuentan que paso y guian al jugador. La historia no se "cuenta" &mdash; se descubre.</p>
+                </div>
+
+                <div class="mechanic-card">
+                    <div class="mechanic-icon">&#128065;</div>
+                    <h3>Tension Atmosferica</h3>
+                    <p>Movimiento lento, campo de vision limitado, sonidos ambientales. El horror viene de no saber que hay en la siguiente habitacion.</p>
+                </div>
+            </div>
+
+            <!-- TABLA COMPARATIVA DE ARMAS -->
+            <div class="weapons-table">
+                <h3>Comparativa de Armas (Demo)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Arma</th>
+                            <th>Probabilidad de Acierto</th>
+                            <th>Rango</th>
+                            <th>Riesgo</th>
+                            <th>Ventaja</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Pistola</strong></td>
+                            <td>40%</td>
+                            <td>Largo</td>
+                            <td>Puedes fallar y quedar expuesto</td>
+                            <td>Distancia segura</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cuchillo</strong></td>
+                            <td>100%</td>
+                            <td>Cuerpo a cuerpo</td>
+                            <td>Debes acercarte al zombie</td>
+                            <td>Siempre acierta</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCION 4: CONDICIONES Y CARACTERISTICAS -->
+    <section id="condiciones" class="section section-dark">
+        <div class="container">
+            <h2 class="section-title">Condiciones y Caracteristicas</h2>
+            
+            <div class="conditions-grid">
+                <div class="condition-block">
+                    <h3>Tecnologias Utilizadas</h3>
+                    <ul>
+                        <li><strong>HTML5</strong> &mdash; Estructura del documento y Canvas para renderizado del juego</li>
+                        <li><strong>CSS3</strong> &mdash; Estilos de la interfaz, animaciones, efectos visuales</li>
+                        <li><strong>JavaScript</strong> &mdash; Motor del juego: logica, renderizado, input, IA de enemigos</li>
+                        <li><strong>Python</strong> &mdash; Logica de backend: sistema de guardado, probabilidades, gestion de estado</li>
+                    </ul>
+                </div>
+
+                <div class="condition-block">
+                    <h3>Alcance de la Demo</h3>
+                    <ul>
+                        <li>Escenario: Recepcion de la comisaria</li>
+                        <li>Duracion estimada: 2-3 minutos</li>
+                        <li>Contenido: Entrada &rarr; Agente M &rarr; Carta LSK &rarr; Elegir arma &rarr; Combate (3 zombies) &rarr; Fin</li>
+                        <li>Municion: Ilimitada (solo para la demo)</li>
+                        <li>Probabilidad de acierto: Fija en 40% (solo para la demo)</li>
+                    </ul>
+                </div>
+
+                <div class="condition-block">
+                    <h3>Controles</h3>
+                    <ul>
+                        <li><strong>W A S D</strong> &mdash; Movimiento</li>
+                        <li><strong>Mouse</strong> &mdash; Apuntar (el personaje rota hacia el cursor)</li>
+                        <li><strong>Click Izquierdo</strong> &mdash; Atacar / Disparar</li>
+                        <li><strong>E</strong> &mdash; Interactuar (inspeccionar objetos, leer documentos)</li>
+                        <li><strong>1 / 2</strong> &mdash; Seleccionar arma (cuando se presenta la eleccion)</li>
+                    </ul>
+                </div>
+
+                <div class="condition-block">
+                    <h3>Proyecto Final (Alcance Completo)</h3>
+                    <ul>
+                        <li>Comisaria completa (multiples habitaciones)</li>
+                        <li>Probabilidad de acierto progresiva (40% &rarr; 80%)</li>
+                        <li>Multiples armas encontrables</li>
+                        <li>Sistema de puertas con llaves/condiciones</li>
+                        <li>Mas documentos de LSK contando la historia</li>
+                        <li>Municion limitada</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCION 5: FUNCIONES PYTHON + JAVASCRIPT -->
+    <section id="funciones" class="section">
+        <div class="container">
+            <h2 class="section-title">Funciones Python & JavaScript</h2>
+            <p class="section-intro">5 funciones en cada lenguaje, aplicadas directamente a las mecanicas del juego.</p>
+
+            <!-- PYTHON -->
+            <div class="language-block">
+                <h3 class="language-title python-title">Python</h3>
+
+                <div class="function-card">
+                    <h4>1. calcular_probabilidad_acierto(nivel_experiencia)</h4>
+                    <p class="function-desc">Calcula la probabilidad de que un disparo acierte segun el progreso del jugador.</p>
+                    <pre><code class="python">def calcular_probabilidad_acierto(nivel_experiencia):
+    """
+    Calcula la probabilidad de acierto basada en la experiencia.
+    Nivel 1 = 40%, incrementa hasta 80% en nivel 10.
+    """
+    base = 0.40
+    incremento = 0.04  # 4% por nivel
+    maximo = 0.80
+    probabilidad = base + (nivel_experiencia - 1) * incremento
+    return min(probabilidad, maximo)
+
+# Ejemplo:
+print(calcular_probabilidad_acierto(1))   # 0.40 (inicio/demo)
+print(calcular_probabilidad_acierto(5))   # 0.56
+print(calcular_probabilidad_acierto(10))  # 0.76 -> tope 0.80</code></pre>
+                </div>
+
+                <div class="function-card">
+                    <h4>2. intentar_disparo(probabilidad)</h4>
+                    <p class="function-desc">Simula un disparo y determina si acierta o falla usando random.</p>
+                    <pre><code class="python">import random
+
+def intentar_disparo(probabilidad):
+    """
+    Simula un disparo. Retorna True si acierta, False si falla.
+    Usa random.random() que genera un float entre 0 y 1.
+    """
+    resultado = random.random()
+    acierto = resultado <= probabilidad
+    if acierto:
+        print(f"[ACIERTO] Resultado: {resultado:.2f} <= {probabilidad}")
+    else:
+        print(f"[FALLO] Resultado: {resultado:.2f} > {probabilidad}")
+    return acierto
+
+# Ejemplo (demo con 40%):
+intentar_disparo(0.40)  # ~40% de veces sera True</code></pre>
+                </div>
+
+                <div class="function-card">
+                    <h4>3. gestionar_inventario(inventario, arma_nueva, arma_actual)</h4>
+                    <p class="function-desc">Implementa el sistema de arma unica: solo una a la vez, decide si cambiar.</p>
+                    <pre><code class="python">def gestionar_inventario(inventario, arma_nueva, arma_actual):
+    """
+    Gestiona el sistema de arma unica.
+    Si el jugador no tiene arma, la toma automaticamente.
+    Si ya tiene una, retorna las opciones para elegir.
+    """
+    if arma_actual is None:
+        inventario["arma"] = arma_nueva
+        return f"Has tomado: {arma_nueva['nombre']}"
+    else:
+        return {
+            "mensaje": "Ya tienes un arma equipada.",
+            "actual": arma_actual,
+            "nueva": arma_nueva,
+            "opciones": ["mantener", "cambiar"]
+        }
+
+# Ejemplo:
+inventario = {"arma": None}
+pistola = {"nombre": "Pistola M19", "tipo": "rango", "prob": 0.40}
+cuchillo = {"nombre": "Cuchillo Tactico", "tipo": "melee", "prob": 1.0}
+
+print(gestionar_inventario(inventario, pistola, None))
+print(gestionar_inventario(inventario, cuchillo, pistola))</code></pre>
+                </div>
+
+                <div class="function-card">
+                    <h4>4. cargar_documento(id_documento, documentos_db)</h4>
+                    <p class="function-desc">Busca y retorna un documento narrativo (cartas de LSK) desde la base de datos del juego.</p>
+                    <pre><code class="python">def cargar_documento(id_documento, documentos_db):
+    """
+    Busca un documento por su ID en la base de datos.
+    Retorna el contenido si existe, o un mensaje de error.
+    Usa dict.get() para acceso seguro.
+    """
+    documento = documentos_db.get(id_documento)
+    if documento:
+        return {
+            "encontrado": True,
+            "autor": documento["autor"],
+            "contenido": documento["texto"],
+            "pista": documento.get("pista", None)
+        }
+    return {"encontrado": False, "mensaje": "Documento ilegible..."}
+
+# Ejemplo:
+documentos = {
+    "nota_recepcion": {
+        "autor": "LSK",
+        "texto": "El Agente M no lo logro. Yo fui tras ellos...",
+        "pista": "Busca la llave en la oficina del segundo piso."
+    }
+}
+print(cargar_documento("nota_recepcion", documentos))</code></pre>
+                </div>
+
+                <div class="function-card">
+                    <h4>5. calcular_dano(arma, enemigo)</h4>
+                    <p class="function-desc">Calcula el dano infligido considerando el tipo de arma y la resistencia del enemigo.</p>
+                    <pre><code class="python">def calcular_dano(arma, enemigo):
+    """
+    Calcula el dano real aplicado a un enemigo.
+    Dano = dano_base del arma - resistencia del enemigo.
+    Minimo 1 de dano (siempre hace algo si acierta).
+    """
+    dano_base = arma["dano"]
+    resistencia = enemigo.get("resistencia", 0)
+    dano_real = max(1, dano_base - resistencia)
+    
+    enemigo["hp"] -= dano_real
+    eliminado = enemigo["hp"] <= 0
+    
+    return {
+        "dano_infligido": dano_real,
+        "hp_restante": max(0, enemigo["hp"]),
+        "eliminado": eliminado
+    }
+
+# Ejemplo:
+pistola = {"nombre": "Pistola", "dano": 35}
+zombie = {"nombre": "Zombie", "hp": 100, "resistencia": 5}
+
+print(calcular_dano(pistola, zombie))  # 30 de dano, 70 HP restante</code></pre>
+                </div>
+            </div>
+
+            <!-- JAVASCRIPT -->
+            <div class="language-block">
+                <h3 class="language-title js-title">JavaScript</h3>
+
+                <div class="function-card">
+                    <h4>1. moverJugador(jugador, teclas, deltaTime)</h4>
+                    <p class="function-desc">Controla el movimiento del personaje con WASD, aplicando velocidad y deltaTime para movimiento consistente.</p>
+                    <pre><code class="javascript">function moverJugador(jugador, teclas, deltaTime) {
+    /**
+     * Mueve al jugador segun las teclas presionadas.
+     * Usa deltaTime para que la velocidad sea independiente del FPS.
+     * Velocidad lenta (120px/s) para generar tension.
+     */
+    const velocidad = 120; // pixeles por segundo (lento = tension)
+    let dx = 0, dy = 0;
+
+    if (teclas['w'] || teclas['W']) dy = -1;
+    if (teclas['s'] || teclas['S']) dy = 1;
+    if (teclas['a'] || teclas['A']) dx = -1;
+    if (teclas['d'] || teclas['D']) dx = 1;
+
+    // Normalizar diagonal para que no sea mas rapido
+    if (dx !== 0 && dy !== 0) {
+        dx *= 0.707;
+        dy *= 0.707;
+    }
+
+    jugador.x += dx * velocidad * deltaTime;
+    jugador.y += dy * velocidad * deltaTime;
+
+    return { x: jugador.x, y: jugador.y };
+}
+
+// Ejemplo:
+// En el game loop: moverJugador(player, keys, 0.016); // 60 FPS</code></pre>
+                </div>
+
+                <div class="function-card">
+                    <h4>2. rotarHaciaCursor(jugador, mouseX, mouseY)</h4>
+                    <p class="function-desc">Rota el sprite del jugador para que siempre mire hacia el cursor del mouse (estilo Hotline Miami).</p>
+                    <pre><code class="javascript">function rotarHaciaCursor(jugador, mouseX, mouseY) {
+    /**
+     * Calcula el angulo entre el jugador y el cursor.
+     * Usa Math.atan2() para obtener el angulo en radianes.
+     * El personaje siempre "mira" hacia donde apunta el mouse.
+     */
+    const dx = mouseX - jugador.x;
+    const dy = mouseY - jugador.y;
+    const angulo = Math.atan2(dy, dx);
+    
+    jugador.rotacion = angulo;
+    
+    return angulo; // En radianes, usado para ctx.rotate() al renderizar
+}
+
+// Ejemplo:
+// canvas.addEventListener('mousemove', (e) => {
+//     rotarHaciaCursor(player, e.offsetX, e.offsetY);
+// });</code></pre>
+                </div>
+
+                <div class="function-card">
+                    <h4>3. detectarColision(entidadA, entidadB)</h4>
+                    <p class="function-desc">Detecta si dos entidades (jugador-zombie, bala-zombie) estan colisionando usando distancia circular.</p>
+                    <pre><code class="javascript">function detectarColision(entidadA, entidadB) {
+    /**
+     * Deteccion de colision circular.
+     * Calcula la distancia entre centros y compara con la suma de radios.
+     * Mas simple y natural que colision rectangular para personajes.
+     */
+    const dx = entidadA.x - entidadB.x;
+    const dy = entidadA.y - entidadB.y;
+    const distancia = Math.sqrt(dx * dx + dy * dy);
+    const distanciaMinima = entidadA.radio + entidadB.radio;
+
+    return {
+        colisiona: distancia < distanciaMinima,
+        distancia: distancia,
+        solapamiento: distanciaMinima - distancia
+    };
+}
+
+// Ejemplo:
+// const jugador = { x: 100, y: 200, radio: 16 };
+// const zombie  = { x: 120, y: 210, radio: 14 };
+// detectarColision(jugador, zombie); // { colisiona: true, ... }</code></pre>
+                </div>
+
+                <div class="function-card">
+                    <h4>4. mostrarDocumento(contenido, callback)</h4>
+                    <p class="function-desc">Muestra un documento narrativo (carta de LSK) en pantalla con efecto de maquina de escribir.</p>
+                    <pre><code class="javascript">function mostrarDocumento(contenido, callback) {
+    /**
+     * Muestra texto narrativo con efecto typewriter.
+     * Pausa el juego mientras se muestra.
+     * Llama al callback cuando el jugador cierra el documento.
+     */
+    const overlay = document.getElementById('documento-overlay');
+    const textoEl = document.getElementById('documento-texto');
+    let index = 0;
+
+    overlay.style.display = 'flex';
+    textoEl.textContent = '';
+
+    const intervalo = setInterval(() => {
+        if (index < contenido.length) {
+            textoEl.textContent += contenido[index];
+            index++;
+        } else {
+            clearInterval(intervalo);
+            // Mostrar "Presiona E para cerrar"
+            document.getElementById('cerrar-hint').style.display = 'block';
+        }
+    }, 40); // 40ms por caracter = efecto typewriter
+
+    // Listener para cerrar
+    const cerrar = (e) => {
+        if (e.key === 'e' || e.key === 'E') {
+            overlay.style.display = 'none';
+            document.removeEventListener('keydown', cerrar);
+            if (callback) callback();
+        }
+    };
+    document.addEventListener('keydown', cerrar);
+}
+
+// Ejemplo:
+// mostrarDocumento("El Agente M no lo logro...", () => { gameState = 'playing'; });</code></pre>
+                </div>
+
+                <div class="function-card">
+                    <h4>5. moverZombieHacia(zombie, objetivo, deltaTime)</h4>
+                    <p class="function-desc">IA basica del zombie: se mueve lentamente hacia el jugador en linea recta.</p>
+                    <pre><code class="javascript">function moverZombieHacia(zombie, objetivo, deltaTime) {
+    /**
+     * IA simple: el zombie camina hacia el objetivo (jugador).
+     * Velocidad lenta (50px/s) para dar tiempo de reaccion.
+     * Normaliza la direccion para velocidad constante.
+     */
+    const velocidad = 50; // Lento, como un zombie real
+    const dx = objetivo.x - zombie.x;
+    const dy = objetivo.y - zombie.y;
+    const distancia = Math.sqrt(dx * dx + dy * dy);
+
+    // No moverse si ya esta encima
+    if (distancia < 5) return;
+
+    // Normalizar direccion
+    const dirX = dx / distancia;
+    const dirY = dy / distancia;
+
+    zombie.x += dirX * velocidad * deltaTime;
+    zombie.y += dirY * velocidad * deltaTime;
+
+    // Rotacion del zombie (mira al jugador)
+    zombie.rotacion = Math.atan2(dy, dx);
+}
+
+// Ejemplo en game loop:
+// zombies.forEach(z => moverZombieHacia(z, jugador, deltaTime));</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCION 6: DEMO -->
+    <section id="demo" class="section section-dark">
+        <div class="container">
+            <h2 class="section-title">Demo Jugable</h2>
+            <div class="demo-wrapper">
+                <div class="demo-controls">
+                    <h3>Controles</h3>
+                    <ul>
+                        <li><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> &mdash; Movimiento</li>
+                        <li><kbd>Mouse</kbd> &mdash; Apuntar</li>
+                        <li><kbd>Click Izq.</kbd> &mdash; Atacar</li>
+                        <li><kbd>E</kbd> &mdash; Interactuar</li>
+                        <li><kbd>1</kbd> / <kbd>2</kbd> &mdash; Elegir arma</li>
+                    </ul>
+                </div>
+                <div class="demo-canvas-container">
+                    <canvas id="game-canvas" width="800" height="500"></canvas>
+                    <p class="demo-placeholder">&#127918; Demo en desarrollo &mdash; Proximamente jugable aqui</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <p><strong>Hotline RacoonCity</strong> &mdash; Game Design Document</p>
+            <p>Tecnologias: Python &bull; JavaScript &bull; HTML5 &bull; CSS3</p>
+            <p class="footer-date">2026</p>
+        </div>
+    </footer>
+
+</body>
+</html>
