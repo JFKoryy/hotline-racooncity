@@ -3,6 +3,101 @@
 // Motor del juego: Canvas 2D puro
 // ========================================
 
+// --- PYTHON BACKEND API ---
+// Estas funciones llaman al servidor Python (server.py)
+// que implementa las 5 funciones Python del documento.
+// Si el servidor no esta disponible, usa fallback local.
+const API_BASE = 'http://localhost:8000';
+let pythonBackendActive = false;
+
+async function checkPythonBackend() {
+    try {
+        const res = await fetch(`${API_BASE}/api/status`);
+        if (res.ok) {
+            pythonBackendActive = true;
+            console.log('[BACKEND] Servidor Python conectado.');
+        }
+    } catch (e) {
+        pythonBackendActive = false;
+        console.log('[BACKEND] Servidor Python no disponible. Usando logica local.');
+    }
+}
+
+// Llama a calcular_probabilidad_acierto() en Python
+async function apiCalcularProbabilidad(nivel) {
+    if (!pythonBackendActive) return 0.40 + (nivel - 1) * 0.04;
+    try {
+        const res = await fetch(`${API_BASE}/api/probabilidad`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nivel_experiencia: nivel })
+        });
+        const data = await res.json();
+        return data.probabilidad;
+    } catch (e) { return 0.40; }
+}
+
+// Llama a intentar_disparo() en Python
+async function apiIntentarDisparo(probabilidad) {
+    if (!pythonBackendActive) return { acierto: Math.random() <= probabilidad };
+    try {
+        const res = await fetch(`${API_BASE}/api/disparo`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ probabilidad: probabilidad })
+        });
+        return await res.json();
+    } catch (e) { return { acierto: Math.random() <= probabilidad }; }
+}
+
+// Llama a gestionar_inventario() en Python
+async function apiGestionarInventario(armaNueva, armaActual) {
+    if (!pythonBackendActive) {
+        if (!armaActual) return { accion: 'tomar', arma_equipada: armaNueva };
+        return { accion: 'elegir', opciones: ['mantener', 'cambiar'] };
+    }
+    try {
+        const res = await fetch(`${API_BASE}/api/inventario`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ arma_nueva: armaNueva, arma_actual: armaActual })
+        });
+        return await res.json();
+    } catch (e) { return { accion: 'tomar', arma_equipada: armaNueva }; }
+}
+
+// Llama a cargar_documento() en Python
+async function apiCargarDocumento(idDocumento) {
+    if (!pythonBackendActive) return null;
+    try {
+        const res = await fetch(`${API_BASE}/api/documento`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_documento: idDocumento })
+        });
+        return await res.json();
+    } catch (e) { return null; }
+}
+
+// Llama a calcular_dano() en Python
+async function apiCalcularDano(arma, enemigo) {
+    if (!pythonBackendActive) {
+        const dano = Math.max(1, arma.dano - (enemigo.resistencia || 0));
+        return { dano_infligido: dano, hp_restante: Math.max(0, enemigo.hp - dano), eliminado: (enemigo.hp - dano) <= 0 };
+    }
+    try {
+        const res = await fetch(`${API_BASE}/api/dano`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ arma: arma, enemigo: enemigo })
+        });
+        return await res.json();
+    } catch (e) {
+        const dano = Math.max(1, arma.dano - (enemigo.resistencia || 0));
+        return { dano_infligido: dano, hp_restante: Math.max(0, enemigo.hp - dano), eliminado: (enemigo.hp - dano) <= 0 };
+    }
+}
+
 // --- CONFIGURACION ---
 const CONFIG = {
     CANVAS_WIDTH: 800,
@@ -110,6 +205,9 @@ function init() {
     canvas.width = CONFIG.CANVAS_WIDTH;
     canvas.height = CONFIG.CANVAS_HEIGHT;
 
+    // Verificar si el servidor Python esta activo
+    checkPythonBackend();
+
     // Input listeners
     document.addEventListener('keydown', (e) => {
         keys[e.key.toLowerCase()] = true;
@@ -206,13 +304,13 @@ function handleKeyPress(key) {
         return;
     }
     if (state === GameState.DOCUMENT && key === 'e') {
-        state = GameState.PLAYING;
-        documentRead = true;
-        if (!weaponChosen) {
-            state = GameState.WEAPON_CHOICE;
-        } else if (!zombiesSpawned) {
+        // Al cerrar la nota, solo vuelve a jugar.
+        // Los zombies aparecen cuando ya eligio arma Y leyo la nota.
+        if (weaponChosen && !zombiesSpawned) {
             spawnZombies();
             state = GameState.COMBAT;
+        } else {
+            state = GameState.PLAYING;
         }
         return;
     }
@@ -221,11 +319,13 @@ function handleKeyPress(key) {
             player.weapon = 'pistol';
             weaponChosen = true;
             addMessage("Has tomado la Pistola M19. [40% acierto]", 3);
-            if (documentRead) {
+            // Los zombies aparecen solo si ya leyo la nota tambien
+            if (documentRead && !zombiesSpawned) {
                 spawnZombies();
                 state = GameState.COMBAT;
             } else {
                 state = GameState.PLAYING;
+                addMessage("Hay un documento sobre el mostrador...", 3);
             }
             return;
         }
@@ -233,11 +333,12 @@ function handleKeyPress(key) {
             player.weapon = 'knife';
             weaponChosen = true;
             addMessage("Has tomado el Cuchillo Táctico. [100% acierto, cuerpo a cuerpo]", 3);
-            if (documentRead) {
+            if (documentRead && !zombiesSpawned) {
                 spawnZombies();
                 state = GameState.COMBAT;
             } else {
                 state = GameState.PLAYING;
+                addMessage("Hay un documento sobre el mostrador...", 3);
             }
             return;
         }
@@ -299,44 +400,46 @@ function shootPistol() {
     player.attackCooldown = 0.5;
     screenShake = 0.15;
 
-    // Probabilidad de acierto
-    const hit = Math.random() <= CONFIG.HIT_PROBABILITY;
+    // Usa la funcion Python intentar_disparo() via API
+    // (con fallback local si el servidor no esta activo)
+    apiIntentarDisparo(CONFIG.HIT_PROBABILITY).then(result => {
+        const hit = result.acierto;
 
-    // Crear bala visual
-    const angle = Math.atan2(
-        player.target.y - player.y,
-        player.target.x - player.x
-    );
+        // Crear bala visual
+        const angle = Math.atan2(
+            player.target.y - player.y,
+            player.target.x - player.x
+        );
 
-    if (hit) {
-        bullets.push({
-            x: player.x,
-            y: player.y,
-            dx: Math.cos(angle) * CONFIG.BULLET_SPEED,
-            dy: Math.sin(angle) * CONFIG.BULLET_SPEED,
-            targetX: player.target.x,
-            targetY: player.target.y,
-            hit: true,
-            target: player.target,
-            life: 1
-        });
-        // Muzzle flash particles
-        spawnMuzzleFlash(player.x, player.y, angle);
-    } else {
-        // Bala que falla - se desvía
-        const missAngle = angle + (Math.random() - 0.5) * 0.8;
-        bullets.push({
-            x: player.x,
-            y: player.y,
-            dx: Math.cos(missAngle) * CONFIG.BULLET_SPEED,
-            dy: Math.sin(missAngle) * CONFIG.BULLET_SPEED,
-            hit: false,
-            target: null,
-            life: 0.5
-        });
-        addMessage("¡Fallo!", 1);
-        spawnMuzzleFlash(player.x, player.y, missAngle);
-    }
+        if (hit) {
+            bullets.push({
+                x: player.x,
+                y: player.y,
+                dx: Math.cos(angle) * CONFIG.BULLET_SPEED,
+                dy: Math.sin(angle) * CONFIG.BULLET_SPEED,
+                targetX: player.target.x,
+                targetY: player.target.y,
+                hit: true,
+                target: player.target,
+                life: 1
+            });
+            spawnMuzzleFlash(player.x, player.y, angle);
+        } else {
+            // Bala que falla - se desvia
+            const missAngle = angle + (Math.random() - 0.5) * 0.8;
+            bullets.push({
+                x: player.x,
+                y: player.y,
+                dx: Math.cos(missAngle) * CONFIG.BULLET_SPEED,
+                dy: Math.sin(missAngle) * CONFIG.BULLET_SPEED,
+                hit: false,
+                target: null,
+                life: 0.5
+            });
+            addMessage("¡Fallo!", 1);
+            spawnMuzzleFlash(player.x, player.y, missAngle);
+        }
+    });
 }
 
 
@@ -361,23 +464,29 @@ function swingKnife() {
 }
 
 function damageZombie(zombie, damage) {
-    zombie.hp -= damage;
-    zombie.hitFlash = 0.2;
-    if (zombie.hp <= 0) {
-        zombie.isDead = true;
-        zombie.deathTimer = 2;
-        spawnBloodParticles(zombie.x, zombie.y);
-        addMessage("Zombie eliminado", 2);
-        // Checar si target murio
-        if (player.target === zombie) {
-            player.target = null;
+    // Usa la funcion Python calcular_dano() via API
+    const armaData = player.weapon === 'pistol'
+        ? { nombre: 'Pistola M19', dano: CONFIG.GUN_DAMAGE }
+        : { nombre: 'Cuchillo Tactico', dano: CONFIG.KNIFE_DAMAGE };
+    const enemyData = { hp: zombie.hp, resistencia: 0 };
+
+    apiCalcularDano(armaData, enemyData).then(result => {
+        zombie.hp = result.hp_restante;
+        zombie.hitFlash = 0.2;
+        if (result.eliminado) {
+            zombie.isDead = true;
+            zombie.deathTimer = 2;
+            spawnBloodParticles(zombie.x, zombie.y);
+            addMessage("Zombie eliminado", 2);
+            if (player.target === zombie) {
+                player.target = null;
+            }
+            const alive = zombies.filter(z => !z.isDead);
+            if (alive.length === 0 && zombiesSpawned) {
+                setTimeout(() => { state = GameState.WIN; }, 1500);
+            }
         }
-        // Checar victoria
-        const alive = zombies.filter(z => !z.isDead);
-        if (alive.length === 0 && zombiesSpawned) {
-            setTimeout(() => { state = GameState.WIN; }, 1500);
-        }
-    }
+    });
 }
 
 
@@ -392,6 +501,7 @@ function tryInteract() {
         addMessage("Encuentras el arma y cuchillo del Agente M.", 3);
     } else if (obj.id === 'carta_lsk' && !obj.inspected) {
         obj.inspected = true;
+        documentRead = true;
         state = GameState.DOCUMENT;
     }
 }
@@ -488,7 +598,7 @@ function update(dt) {
     // Movimiento jugador
     movePlayer(dt);
 
-    // Rotacion hacia cursor
+    // --- Funcion JS #2 del documento: rotarHaciaCursor(jugador, mouseX, mouseY) ---
     player.rotation = Math.atan2(mouse.y - player.y, mouse.x - player.x);
 
     // Check interactables cercanos
@@ -529,6 +639,7 @@ function update(dt) {
 }
 
 
+// --- Funcion JS #1 del documento: moverJugador(jugador, teclas, deltaTime) ---
 function movePlayer(dt) {
     let dx = 0, dy = 0;
     if (keys['w']) dy = -1;
@@ -558,6 +669,7 @@ function isSolid(x, y) {
     return tile === 1 || tile === 2;
 }
 
+// --- Funcion JS #5 del documento: moverZombieHacia(zombie, objetivo, deltaTime) ---
 function updateZombies(dt) {
     zombies.forEach(z => {
         if (z.isDead) {
@@ -595,6 +707,7 @@ function updateZombies(dt) {
 }
 
 
+// --- Funcion JS #3 del documento: detectarColision(entidadA, entidadB) ---
 function updateBullets(dt) {
     bullets.forEach(b => {
         b.x += b.dx * dt;
@@ -822,8 +935,8 @@ function renderInteractables() {
             // Cuerpo acostado
             ctx.fillStyle = '#1a2a4a'; // Uniforme azul oscuro
             ctx.fillRect(-15, -6, 30, 12);
-            // Cabeza
-            ctx.fillStyle = '#8b6b50';
+            // Cabeza (piel oscura)
+            ctx.fillStyle = '#4a3228';
             ctx.beginPath();
             ctx.arc(-18, 0, 6, 0, Math.PI * 2);
             ctx.fill();
@@ -1114,6 +1227,7 @@ function renderUI() {
 }
 
 
+// --- Funcion JS #4 del documento: mostrarDocumento(contenido, callback) ---
 function renderDocumentOverlay() {
     // Fondo oscuro
     ctx.fillStyle = 'rgba(0,0,0,0.85)';
@@ -1147,19 +1261,19 @@ function renderDocumentOverlay() {
         "",
         "Si alguien lee esto:",
         "",
-        "El Agente M no lo logró. Lo intentó hasta",
-        "el final pero eran demasiados. Yo fui tras",
-        "ellos — hay algo en el segundo piso que",
-        "causó todo esto.",
-        "",
-        "NO intentes salir por la puerta principal.",
-        "Está bloqueada desde afuera.",
+        "El Agente M no lo logro. Yo fui tras ellos.",
+        "Trata de salir por la puerta trasera de la",
+        "comisaria; imagino que la entrada debe estar",
+        "llena de ellos.",
         "",
         "Busca la llave en la oficina del segundo",
-        "piso. Si llegas ahí, tal vez nos",
+        "piso. Si llegas ahi, tal vez nos",
         "encontremos.",
         "",
-        "Buena suerte.",
+        "",
+        "",
+        "",
+        "",
         "",
         "                              — LSK"
     ];
